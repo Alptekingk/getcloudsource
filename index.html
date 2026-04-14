@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="CloudSource Bilişim — Microsoft, Azure, AWS, Google Cloud ve Alibaba Cloud danışmanlığı. AI çözümleri, IoT otomasyon, mobil ve web geliştirme. İstanbul.">
+<meta name="keywords" content="cloud danışmanlık, azure, aws, google cloud, microsoft 365, office 365, yapay zeka, IoT, otomasyon, istanbul">
+<meta property="og:title" content="CloudSource Bilişim Danışmanlık">
+<meta property="og:description" content="Bulut, yapay zeka ve otomasyon çözümleriyle işletmenizi dönüştürün.">
+<meta property="og:url" content="https://getcloudsource.com">
+<title>CloudSource — Bulut & AI Danışmanlık</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue: #0F52BA;
+  --blue-d: #0A3A8A;
+  --blue-l: #EBF1FD;
+  --blue-m: #4A7FD4;
+  --teal: #0D9E8A;
+  --teal-l: #E5F7F5;
+  --purple: #5B45C2;
+  --purple-l: #EEEBFB;
+  --green: #1E8A4C;
+  --green-l: #E6F5EC;
+  --amber: #C27A0D;
+  --amber-l: #FDF3E3;
+  --text: #0D1117;
+  --text2: #4A5568;
+  --text3: #8A95A3;
+  --bg: #F7F8FA;
+  --surface: #FFFFFF;
+  --border: rgba(15,82,186,0.10);
+  --border2: rgba(0,0,0,0.08);
+  --r: 10px;
+  --rl: 16px;
+  --nav-h: 60px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.6; }
+h1,h2,h3,h4 { font-family: 'Syne', sans-serif; font-weight: 600; line-height: 1.2; }
+a { text-decoration: none; color: inherit; }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  height: var(--nav-h);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 40px;
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-mark {
+  width: 34px; height: 34px; background: var(--blue);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+}
+.logo-mark svg { width: 20px; height: 20px; fill: white; }
+.logo-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; letter-spacing: -0.3px; }
+.logo-name span { color: var(--blue); }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a { font-size: 13px; font-weight: 400; color: var(--text2); transition: color .15s; }
+.nav-links a:hover { color: var(--blue); }
+.nav-cta {
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600;
+  padding: 8px 20px; background: var(--blue); color: white;
+  border: none; border-radius: 8px; cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+.nav-cta:hover { background: var(--blue-d); }
+.nav-cta:active { transform: scale(.98); }
+
+/* ── TICKER ── */
+.ticker {
+  background: var(--blue); color: white;
+  padding: 0; height: 36px; overflow: hidden;
+  display: flex; align-items: center;
+}
+.ticker-label {
+  flex-shrink: 0; padding: 0 18px;
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  border-right: 1px solid rgba(255,255,255,0.25);
+  height: 100%; display: flex; align-items: center;
+  background: rgba(0,0,0,0.15);
+}
+.ticker-track { display: flex; animation: ticker 40s linear infinite; white-space: nowrap; }
+.ticker-track:hover { animation-play-state: paused; }
+.ticker-item { font-size: 12px; padding: 0 32px; opacity: 0.9; }
+.ticker-sep { opacity: 0.4; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ── HERO ── */
+.hero {
+  padding: 96px 40px 80px;
+  border-bottom: 1px solid var(--border2);
+  background: var(--surface);
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; top: -120px; right: -80px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(15,82,186,0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-inner { max-width: 700px; margin: 0 auto; text-align: center; position: relative; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 12px; font-weight: 500;
+  padding: 5px 16px; border-radius: 20px;
+  background: var(--blue-l); color: var(--blue-d);
+  border: 1px solid rgba(15,82,186,0.15);
+  margin-bottom: 24px;
+}
+.hero-badge span { width: 6px; height: 6px; border-radius: 50%; background: var(--blue); display: inline-block; animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{ opacity:1; transform:scale(1); } 50%{ opacity:.5; transform:scale(1.3); } }
+.hero h1 { font-size: clamp(32px, 5vw, 52px); font-weight: 700; letter-spacing: -1px; margin-bottom: 18px; line-height: 1.1; }
+.hero h1 em { font-style: normal; color: var(--blue); }
+.hero p { font-size: 16px; color: var(--text2); line-height: 1.8; max-width: 540px; margin: 0 auto 32px; font-weight: 300; }
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 48px; }
+.btn-primary {
+  padding: 13px 30px; background: var(--blue); color: white;
+  border: none; border-radius: var(--r); font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+.btn-primary:hover { background: var(--blue-d); transform: translateY(-1px); }
+.btn-outline {
+  padding: 13px 30px; background: transparent; color: var(--text);
+  border: 1px solid var(--border2); border-radius: var(--r);
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all .15s;
+}
+.btn-outline:hover { border-color: var(--blue); color: var(--blue); }
+.cloud-partners { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.cloud-chip {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--text2); font-weight: 400;
+  padding: 6px 14px; border-radius: 20px;
+  border: 1px solid var(--border2); background: var(--bg);
+}
+.chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* ── STATS ── */
+.stats {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border-bottom: 1px solid var(--border2);
+  background: var(--surface);
+}
+.stat-item {
+  text-align: center; padding: 28px 20px;
+  border-right: 1px solid var(--border2);
+}
+.stat-item:last-child { border-right: none; }
+.stat-num { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 700; color: var(--blue); }
+.stat-lbl { font-size: 12px; color: var(--text3); margin-top: 4px; }
+
+/* ── SECTIONS ── */
+.section { padding: 72px 40px; border-bottom: 1px solid var(--border2); }
+.section.alt { background: var(--bg); }
+.section.dark { background: #0D1117; color: white; border-color: rgba(255,255,255,0.06); }
+.section-header { margin-bottom: 40px; }
+.sec-tag {
+  font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 8px;
+}
+.sec-tag.light { color: rgba(255,255,255,0.5); }
+.section-title { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+.section-sub { font-size: 15px; color: var(--text2); max-width: 520px; line-height: 1.7; font-weight: 300; }
+.section-sub.light { color: rgba(255,255,255,0.6); }
+
+/* ── ABOUT ── */
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+.about-text p { font-size: 14px; color: var(--text2); line-height: 1.85; margin-bottom: 14px; font-weight: 300; }
+.about-text strong { color: var(--text); font-weight: 500; }
+.cert-list { display: flex; flex-direction: column; gap: 10px; }
+.cert-card {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 16px; border-radius: var(--r);
+  border: 1px solid var(--border2); background: var(--surface);
+  transition: border-color .15s, transform .15s;
+}
+.cert-card:hover { border-color: var(--blue); transform: translateX(4px); }
+.cert-ico { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.cert-ico svg { width: 18px; height: 18px; }
+.cert-name { font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+.cert-sub { font-size: 11px; color: var(--text3); }
+
+/* ── SERVICES ── */
+.svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.svc-card {
+  padding: 22px; border-radius: var(--rl);
+  border: 1px solid var(--border2); background: var(--surface);
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+  cursor: default;
+}
+.svc-card:hover { border-color: var(--blue); transform: translateY(-3px); box-shadow: 0 8px 24px rgba(15,82,186,0.08); }
+.svc-ico-wrap { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+.svc-ico-wrap svg { width: 20px; height: 20px; }
+.svc-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.svc-desc { font-size: 12px; color: var(--text2); line-height: 1.7; font-weight: 300; }
+.svc-chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 12px; }
+.svc-chip { font-size: 10px; padding: 2px 9px; border-radius: 4px; background: var(--bg); color: var(--text3); border: 1px solid var(--border2); }
+
+/* ── TEAM ── */
+.team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.team-card {
+  border: 1px solid var(--border2); border-radius: var(--rl);
+  padding: 20px; text-align: center; background: var(--surface);
+  transition: border-color .15s;
+}
+.team-card:hover { border-color: var(--blue); }
+.team-av {
+  width: 52px; height: 52px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+  margin: 0 auto 14px;
+}
+.team-name { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.team-role { font-size: 11px; color: var(--text3); margin-bottom: 10px; }
+.team-chips { display: flex; flex-wrap: wrap; gap: 4px; justify-content: center; }
+.team-chip { font-size: 10px; padding: 2px 7px; border-radius: 4px; background: var(--bg); color: var(--text2); }
+
+/* ── PROJECTS ── */
+.proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.proj-card {
+  border: 1px solid var(--border2); border-radius: var(--rl);
+  background: var(--surface); overflow: hidden;
+  transition: border-color .2s, transform .2s;
+}
+.proj-card:hover { border-color: var(--blue); transform: translateY(-3px); }
+.proj-top { padding: 20px; border-bottom: 1px solid var(--border2); }
+.proj-badge {
+  display: inline-block; font-size: 10px; font-weight: 500;
+  padding: 3px 10px; border-radius: 4px; margin-bottom: 10px;
+}
+.proj-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.proj-desc { font-size: 12px; color: var(--text2); line-height: 1.7; font-weight: 300; }
+.proj-bottom { padding: 10px 16px; display: flex; flex-wrap: wrap; gap: 4px; }
+.tech-chip { font-size: 10px; padding: 2px 8px; border-radius: 4px; background: var(--bg); color: var(--text3); }
+
+/* ── BLOG ── */
+.blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.blog-card {
+  border: 1px solid var(--border2); border-radius: var(--rl);
+  background: var(--surface); overflow: hidden;
+  transition: border-color .2s, transform .2s;
+  cursor: pointer;
+}
+.blog-card:hover { border-color: var(--blue); transform: translateY(-3px); }
+.blog-accent { height: 4px; }
+.blog-body { padding: 18px; }
+.blog-cat { font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
+.blog-title { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; line-height: 1.5; margin-bottom: 12px; }
+.blog-meta { display: flex; align-items: center; gap: 8px; }
+.blog-av { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; }
+.blog-info { font-size: 11px; color: var(--text3); }
+.blog-new { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 4px; background: var(--green-l); color: var(--green); margin-left: auto; }
+
+/* ── CTA BAND ── */
+.cta-band {
+  background: var(--blue); color: white;
+  padding: 56px 40px; text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.cta-band h2 { font-size: 32px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.5px; }
+.cta-band p { font-size: 15px; opacity: 0.8; max-width: 440px; margin: 0 auto 28px; font-weight: 300; }
+.btn-white {
+  padding: 13px 32px; background: white; color: var(--blue);
+  border: none; border-radius: var(--r);
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: transform .1s, opacity .15s;
+}
+.btn-white:hover { transform: translateY(-1px); opacity: 0.92; }
+
+/* ── CONTACT ── */
+.contact-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 48px; }
+.contact-left h3 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+.contact-left p { font-size: 13px; color: var(--text2); line-height: 1.7; margin-bottom: 24px; font-weight: 300; }
+.contact-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
+.contact-row svg { width: 16px; height: 16px; stroke: var(--blue); flex-shrink: 0; margin-top: 2px; }
+.contact-row-text { font-size: 13px; color: var(--text2); }
+.contact-row-text strong { display: block; font-size: 12px; font-weight: 500; color: var(--text); margin-bottom: 1px; }
+.contact-form { display: flex; flex-direction: column; gap: 12px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.contact-form input,
+.contact-form textarea,
+.contact-form select {
+  width: 100%; padding: 11px 14px;
+  border: 1px solid var(--border2); border-radius: var(--r);
+  font-family: 'DM Sans', sans-serif; font-size: 13px;
+  background: var(--surface); color: var(--text);
+  outline: none; transition: border-color .15s, box-shadow .15s;
+}
+.contact-form input:focus,
+.contact-form textarea:focus,
+.contact-form select:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(15,82,186,0.08);
+}
+.contact-form textarea { height: 110px; resize: vertical; line-height: 1.6; }
+
+/* ── FOOTER ── */
+footer {
+  background: #0D1117; color: white;
+  padding: 48px 40px 28px;
+}
+.footer-top {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 40px; margin-bottom: 40px;
+  padding-bottom: 40px; border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.footer-brand .logo-name { color: white; margin-top: 10px; margin-bottom: 12px; font-size: 16px; }
+.footer-brand .logo-name span { color: var(--blue-m); }
+.footer-brand p { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.7; max-width: 240px; font-weight: 300; }
+.footer-col h4 { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(255,255,255,0.5); margin-bottom: 14px; }
+.footer-col a { display: block; font-size: 13px; color: rgba(255,255,255,0.65); margin-bottom: 8px; transition: color .15s; cursor: pointer; }
+.footer-col a:hover { color: white; }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; }
+.footer-copy { font-size: 11px; color: rgba(255,255,255,0.3); }
+.footer-legal { display: flex; gap: 20px; }
+.footer-legal a { font-size: 11px; color: rgba(255,255,255,0.3); cursor: pointer; transition: color .15s; }
+.footer-legal a:hover { color: rgba(255,255,255,0.6); }
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero { padding: 64px 20px 48px; }
+  .section { padding: 52px 20px; }
+  .stats { grid-template-columns: repeat(2,1fr); }
+  .about-grid, .contact-grid, .footer-top { grid-template-columns: 1fr; gap: 28px; }
+  .svc-grid, .team-grid, .proj-grid, .blog-grid { grid-template-columns: 1fr; }
+  .form-row { grid-template-columns: 1fr; }
+  .footer-bottom { flex-direction: column; gap: 12px; text-align: center; }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+  .svc-grid, .blog-grid { grid-template-columns: repeat(2,1fr); }
+  .team-grid { grid-template-columns: repeat(2,1fr); }
+  .footer-top { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── ANIMATIONS ── */
+.fade-in { opacity: 0; transform: translateY(16px); transition: opacity .5s ease, transform .5s ease; }
+.fade-in.visible { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>
+    </div>
+    <div class="logo-name"><span>Cloud</span>Source</div>
+  </div>
+  <div class="nav-links">
+    <a href="#hakkimizda">Hakkımızda</a>
+    <a href="#hizmetler">Hizmetler</a>
+    <a href="#ekip">Ekip</a>
+    <a href="#projeler">Projeler</a>
+    <a href="#blog">Blog & Haberler</a>
+    <a href="#iletisim">İletişim</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('iletisim').scrollIntoView({behavior:'smooth'})">Teklif Al</button>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-label">Son Haberler</div>
+  <div style="overflow:hidden;flex:1">
+    <div class="ticker-track" id="ticker">
+      <span class="ticker-item">Microsoft Copilot Studio'ya yeni ajan özellikleri eklendi</span>
+      <span class="ticker-sep">·</span>
+      <span class="ticker-item">AWS re:Invent 2026 tarihleri açıklandı</span>
+      <span class="ticker-sep">·</span>
+      <span class="ticker-item">Google Cloud Next'te Gemini 2.0 entegrasyonları duyuruldu</span>
+      <span class="ticker-sep">·</span>
+      <span class="ticker-item">Azure OpenAI GPT-4o fine-tuning GA oldu</span>
+      <span class="ticker-sep">·</span>
+      <span class="ticker-item">Alibaba Cloud Türkiye veri merkezi genişleme planı</span>
+      <span class="ticker-sep">·</span>
+      <span class="ticker-item">Node-RED 4.0 sürümü yayınlandı</span>
+      <span class="ticker-sep">·</span>
+      <span class="ticker-item">Microsoft Copilot Studio'ya yeni ajan özellikleri eklendi</span>
+      <span class="ticker-sep">·</span>
+      <span class="ticker-item">AWS re:Invent 2026 tarihleri açıklandı</span>
+      <span class="ticker-sep">·</span>
+      <span class="ticker-item">Google Cloud Next'te Gemini 2.0 entegrasyonları duyuruldu</span>
+      <span class="ticker-sep">·</span>
+      <span class="ticker-item">Azure OpenAI GPT-4o fine-tuning GA oldu</span>
+      <span class="ticker-sep">·</span>
+      <span class="ticker-item">Alibaba Cloud Türkiye veri merkezi genişleme planı</span>
+      <span class="ticker-sep">·</span>
+      <span class="ticker-item">Node-RED 4.0 sürümü yayınlandı</span>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">
+      <span></span>
+      Microsoft İş Ortağı · Multi-Cloud Danışmanlık · İstanbul
+    </div>
+    <h1>Bulut, <em>yapay zeka</em> ve<br>otomasyonla büyüyün</h1>
+    <p>Uzman ekibimizle Microsoft, Azure, AWS, Google Cloud ve Alibaba Cloud teknolojilerinde kurumsal dijital dönüşüm. AI entegrasyonundan IoT otomasyonuna uçtan uca çözümler.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.getElementById('hizmetler').scrollIntoView({behavior:'smooth'})">Hizmetleri Keşfet</button>
+      <button class="btn-outline" onclick="document.getElementById('projeler').scrollIntoView({behavior:'smooth'})">Proje Portföyü</button>
+    </div>
+    <div class="cloud-partners">
+      <div class="cloud-chip"><div class="chip-dot" style="background:#0078D4"></div>Microsoft Azure</div>
+      <div class="cloud-chip"><div class="chip-dot" style="background:#FF9900"></div>AWS</div>
+      <div class="cloud-chip"><div class="chip-dot" style="background:#4285F4"></div>Google Cloud</div>
+      <div class="cloud-chip"><div class="chip-dot" style="background:#FF6A00"></div>Alibaba Cloud</div>
+      <div class="cloud-chip"><div class="chip-dot" style="background:#0078D4"></div>Office 365</div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item fade-in"><div class="stat-num">20+</div><div class="stat-lbl">Yıllık deneyim</div></div>
+  <div class="stat-item fade-in"><div class="stat-num">4</div><div class="stat-lbl">Cloud platform</div></div>
+  <div class="stat-item fade-in"><div class="stat-num">8+</div><div class="stat-lbl">Uzman danışman</div></div>
+  <div class="stat-item fade-in"><div class="stat-num">AI+IoT</div><div class="stat-lbl">Uzmanlık alanları</div></div>
+</div>
+
+<!-- ABOUT -->
+<section class="section" id="hakkimizda">
+  <div class="about-grid">
+    <div>
+      <div class="section-header">
+        <div class="sec-tag">Hakkımızda</div>
+        <div class="section-title">CloudSource Bilişim Danışmanlık</div>
+      </div>
+      <div class="about-text">
+        <p>CloudSource, <strong>Microsoft Türkiye İş Ortaklığı</strong> geçmişi ve çok disiplinli uzman kadrosuyla kurumsal bulut geçiş ve dijital dönüşüm projelerinde uzmanlaşmış bir teknoloji danışmanlık firmasıdır.</p>
+        <p>Office 365, Azure, AWS, Google Cloud ve Alibaba Cloud platformlarında danışmanlığın yanı sıra <strong>AI çözümleri, IoT ve endüstriyel otomasyon, hidroponik sistem entegrasyonu</strong> ile mobil ve web uygulama geliştirme alanlarında da aktif projeler yürütmekteyiz.</p>
+        <p>Müşterilerimizin teknoloji yolculuğunda yalnızca danışman değil, uzun vadeli çözüm ortağı olarak yer alıyoruz. Her projede hem teknik mükemmeliyeti hem de iş sonuçlarını ön planda tutuyoruz.</p>
+      </div>
+    </div>
+    <div class="cert-list">
+      <div class="cert-card">
+        <div class="cert-ico" style="background:#EBF1FD">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0F52BA" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        </div>
+        <div><div class="cert-name">Microsoft İş Ortağı</div><div class="cert-sub">Office 365 · Azure · Dynamics · Intune</div></div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-ico" style="background:#FFF3E0">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#E65100" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>
+        </div>
+        <div><div class="cert-name">AWS Çözüm Ortağı</div><div class="cert-sub">Cloud Infrastructure · Migration · DevOps</div></div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-ico" style="background:#E8F5E9">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <div><div class="cert-name">Google Cloud Partner</div><div class="cert-sub">GCP · Workspace · BigQuery</div></div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-ico" style="background:#E5F7F5">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0D9E8A" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+        </div>
+        <div><div class="cert-name">AI & Otomasyon Uzmanı</div><div class="cert-sub">Node-RED · MQTT · LLM · Edge Computing</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="section alt" id="hizmetler">
+  <div class="section-header">
+    <div class="sec-tag">Hizmetler</div>
+    <div class="section-title">Neler yapıyoruz?</div>
+    <div class="section-sub">Bulut altyapısından yapay zekaya, IoT otomasyonundan mobil uygulamaya kadar uçtan uca teknoloji danışmanlığı.</div>
+  </div>
+  <div class="svc-grid">
+    <div class="svc-card fade-in">
+      <div class="svc-ico-wrap" style="background:#EBF1FD">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0F52BA" stroke-width="2"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg>
+      </div>
+      <div class="svc-title">Cloud Danışmanlık & Geçiş</div>
+      <div class="svc-desc">Azure, AWS, Google Cloud ve Alibaba Cloud üzerinde mimari tasarım, geçiş planlaması, maliyet optimizasyonu ve sürekli yönetim.</div>
+      <div class="svc-chips"><span class="svc-chip">Azure</span><span class="svc-chip">AWS</span><span class="svc-chip">GCP</span><span class="svc-chip">Alibaba</span></div>
+    </div>
+    <div class="svc-card fade-in">
+      <div class="svc-ico-wrap" style="background:#EBF1FD">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0F52BA" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </div>
+      <div class="svc-title">Microsoft 365 & Kurumsal</div>
+      <div class="svc-desc">Office 365 kurulum ve lisanslama, güvenlik yapılandırması, Teams entegrasyonu, SharePoint ve kullanıcı eğitimi hizmetleri.</div>
+      <div class="svc-chips"><span class="svc-chip">Office 365</span><span class="svc-chip">Teams</span><span class="svc-chip">SharePoint</span><span class="svc-chip">Intune</span></div>
+    </div>
+    <div class="svc-card fade-in">
+      <div class="svc-ico-wrap" style="background:#E5F7F5">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0D9E8A" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div class="svc-title">AI Çözümleri & LLM</div>
+      <div class="svc-desc">Kurumsal yapay zeka entegrasyonu, özel LLM uygulamaları, RAG sistemleri, ajan mimarileri ve iş süreci otomasyonu.</div>
+      <div class="svc-chips"><span class="svc-chip">Azure AI</span><span class="svc-chip">OpenAI</span><span class="svc-chip">RAG</span><span class="svc-chip">Agent</span></div>
+    </div>
+    <div class="svc-card fade-in">
+      <div class="svc-ico-wrap" style="background:#EEEBFB">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#5B45C2" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg>
+      </div>
+      <div class="svc-title">Mobil & Web Uygulama</div>
+      <div class="svc-desc">React Native ile cross-platform mobil uygulamalar, Next.js web platformları, Supabase backend ve SaaS çözümleri.</div>
+      <div class="svc-chips"><span class="svc-chip">React Native</span><span class="svc-chip">Next.js</span><span class="svc-chip">Supabase</span><span class="svc-chip">Vercel</span></div>
+    </div>
+    <div class="svc-card fade-in">
+      <div class="svc-ico-wrap" style="background:#E6F5EC">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1E8A4C" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      </div>
+      <div class="svc-title">IoT & Akıllı Sistemler</div>
+      <div class="svc-desc">Özel geliştirdiğimiz arayüzler ve Node-RED tabanlı endüstriyel IoT otomasyon, sensör entegrasyonu ve edge computing çözümleri.</div>
+      <div class="svc-chips"><span class="svc-chip">Node-RED</span><span class="svc-chip">MQTT</span><span class="svc-chip">InfluxDB</span><span class="svc-chip">Edge</span></div>
+    </div>
+    <div class="svc-card fade-in">
+      <div class="svc-ico-wrap" style="background:#E6F5EC">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#1E8A4C" stroke-width="2"><path d="M12 22V12M12 12C12 7 7 4 2 6M12 12C12 7 17 4 22 6"/></svg>
+      </div>
+      <div class="svc-title">Hidroponik & Tarım Teknolojisi</div>
+      <div class="svc-desc">AI destekli sensör analizi, otomatik besin dozajlama, anomali tespiti ve akıllı tarım otomasyon sistemleri geliştirme.</div>
+      <div class="svc-chips"><span class="svc-chip">pH/EC Sensör</span><span class="svc-chip">AI Anomali</span><span class="svc-chip">Otomasyon</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="section" id="ekip">
+  <div class="section-header">
+    <div class="sec-tag">Ekip</div>
+    <div class="section-title">Uzman kadromuz</div>
+    <div class="section-sub">Farklı uzmanlık alanlarından deneyimli danışmanlardan oluşan ekibimiz, projelerinize çok boyutlu bakış açısı getirir.</div>
+  </div>
+  <div class="team-grid">
+    <div class="team-card fade-in">
+      <div class="team-av" style="background:#EBF1FD;color:#0A3A8A">CS</div>
+      <div class="team-name">Cloud Mimarı</div>
+      <div class="team-role">Kıdemli Danışman</div>
+      <div class="team-chips"><span class="team-chip">Azure</span><span class="team-chip">AWS</span><span class="team-chip">GCP</span></div>
+    </div>
+    <div class="team-card fade-in">
+      <div class="team-av" style="background:#EEEBFB;color:#3B2D9A">CS</div>
+      <div class="team-name">AI & Veri Uzmanı</div>
+      <div class="team-role">Kıdemli Danışman</div>
+      <div class="team-chips"><span class="team-chip">LLM</span><span class="team-chip">Python</span><span class="team-chip">RAG</span></div>
+    </div>
+    <div class="team-card fade-in">
+      <div class="team-av" style="background:#E6F5EC;color:#155D35">CS</div>
+      <div class="team-name">IoT & Otomasyon</div>
+      <div class="team-role">Danışman</div>
+      <div class="team-chips"><span class="team-chip">Node-RED</span><span class="team-chip">MQTT</span><span class="team-chip">Edge</span></div>
+    </div>
+    <div class="team-card fade-in">
+      <div class="team-av" style="background:#E5F7F5;color:#0A6B5E">CS</div>
+      <div class="team-name">Mobil & Web</div>
+      <div class="team-role">Geliştirici</div>
+      <div class="team-chips"><span class="team-chip">React Native</span><span class="team-chip">Next.js</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section class="section alt" id="projeler">
+  <div class="section-header">
+    <div class="sec-tag">Referans Projeler</div>
+    <div class="section-title">Öne çıkan çalışmalar</div>
+    <div class="section-sub">Gerçek sorunlara ürettiğimiz somut çözümler.</div>
+  </div>
+  <div class="proj-grid">
+    <div class="proj-card fade-in">
+      <div class="proj-top">
+        <span class="proj-badge" style="background:#EBF1FD;color:#0A3A8A">Hukuk Tech</span>
+        <div class="proj-title">Hukuk Kalkanı</div>
+        <div class="proj-desc">Vatandaş, avukat ve admin rollerine sahip AI destekli hukuki self-servis platformu. Çok katmanlı yetkilendirme ve gerçek zamanlı AI asistan ile tam işlevsel web uygulaması.</div>
+      </div>
+      <div class="proj-bottom"><span class="tech-chip">Supabase</span><span class="tech-chip">Vercel</span><span class="tech-chip">AI</span><span class="tech-chip">JavaScript</span></div>
+    </div>
+    <div class="proj-card fade-in">
+      <div class="proj-top">
+        <span class="proj-badge" style="background:#EEEBFB;color:#3B2D9A">Mobil Uygulama</span>
+        <div class="proj-title">RadarX — Trafik Radar Haritası</div>
+        <div class="proj-desc">Türkiye geneli 2.000+ trafik radar konumunu gösteren React Native mobil uygulama. Gerçek zamanlı GPS uyarısı, Mapbox harita ve FastAPI + PostGIS backend.</div>
+      </div>
+      <div class="proj-bottom"><span class="tech-chip">React Native</span><span class="tech-chip">Expo</span><span class="tech-chip">Mapbox</span><span class="tech-chip">FastAPI</span><span class="tech-chip">PostGIS</span></div>
+    </div>
+    <div class="proj-card fade-in">
+      <div class="proj-top">
+        <span class="proj-badge" style="background:#E6F5EC;color:#155D35">IoT & AI</span>
+        <div class="proj-title">Hidroponik AI Otomasyon</div>
+        <div class="proj-desc">342 node'luk tam otomasyon sistemi. pH, EC, sıcaklık sensörleri, Telegram bildirimleri, AI tabanlı anomali tespiti ve otomatik besin dozajlama.</div>
+      </div>
+      <div class="proj-bottom"><span class="tech-chip">Node-RED</span><span class="tech-chip">MQTT</span><span class="tech-chip">InfluxDB</span><span class="tech-chip">Telegram</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG -->
+<section class="section" id="blog">
+  <div class="section-header">
+    <div class="sec-tag">Blog & Haberler</div>
+    <div class="section-title">Güncel içerik</div>
+    <div class="section-sub">Her gün tech haberleri, her 3 günde bir derinlemesine analiz yazısı.</div>
+  </div>
+  <div class="blog-grid">
+    <div class="blog-card fade-in">
+      <div class="blog-accent" style="background:#0F52BA"></div>
+      <div class="blog-body">
+        <div class="blog-cat">Cloud & Azure</div>
+        <div class="blog-title">Azure ve AWS hibrit mimarisinde maliyet optimizasyonu: gerçek proje deneyimi</div>
+        <div class="blog-meta">
+          <div class="blog-av" style="background:#EBF1FD;color:#0A3A8A">CS</div>
+          <div class="blog-info">CloudSource Ekibi · 14 Nisan 2026</div>
+          <span class="blog-new">Yeni</span>
+        </div>
+      </div>
+    </div>
+    <div class="blog-card fade-in">
+      <div class="blog-accent" style="background:#0D9E8A"></div>
+      <div class="blog-body">
+        <div class="blog-cat">AI & Otomasyon</div>
+        <div class="blog-title">Node-RED ile endüstriyel IoT: sensör verisinden anomali tespitine</div>
+        <div class="blog-meta">
+          <div class="blog-av" style="background:#E5F7F5;color:#0A6B5E">CS</div>
+          <div class="blog-info">CloudSource Ekibi · 11 Nisan 2026</div>
+        </div>
+      </div>
+    </div>
+    <div class="blog-card fade-in">
+      <div class="blog-accent" style="background:#5B45C2"></div>
+      <div class="blog-body">
+        <div class="blog-cat">Mobil Geliştirme</div>
+        <div class="blog-title">React Native + Supabase + Mapbox ile MVP: RadarX nasıl yapıldı?</div>
+        <div class="blog-meta">
+          <div class="blog-av" style="background:#EEEBFB;color:#3B2D9A">CS</div>
+          <div class="blog-info">CloudSource Ekibi · 8 Nisan 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<div class="cta-band">
+  <h2>Projenizi birlikte hayata geçirelim</h2>
+  <p>Bulut geçişinden AI entegrasyonuna, IoT otomasyonundan web platformlarına — ne olursa olun ekibimiz hazır.</p>
+  <button class="btn-white" onclick="document.getElementById('iletisim').scrollIntoView({behavior:'smooth'})">Şimdi İletişime Geç</button>
+</div>
+
+<!-- CONTACT -->
+<section class="section alt" id="iletisim">
+  <div class="contact-grid">
+    <div class="contact-left">
+      <div class="sec-tag">İletişim</div>
+      <h3>Projenizi konuşalım</h3>
+      <p>Hangi aşamada olursanız olun, doğru soruları sormak için buradayız. Ücretsiz ön görüşme için formu doldurun.</p>
+      <div class="contact-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        <div class="contact-row-text"><strong>Adres</strong>İstanbul, Türkiye</div>
+      </div>
+      <div class="contact-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <div class="contact-row-text"><strong>E-posta</strong>info@getcloudsource.com</div>
+      </div>
+      <div class="contact-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+        <div class="contact-row-text"><strong>Web</strong>getcloudsource.com</div>
+      </div>
+      <div class="contact-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+        <div class="contact-row-text"><strong>LinkedIn</strong>CloudSource Bilişim</div>
+      </div>
+    </div>
+    <div class="contact-form">
+      <div class="form-row">
+        <input type="text" placeholder="Adınız Soyadınız" />
+        <input type="text" placeholder="Şirket adı" />
+      </div>
+      <input type="email" placeholder="E-posta adresiniz" />
+      <input type="tel" placeholder="Telefon (opsiyonel)" />
+      <select>
+        <option value="" disabled selected>Konu seçin</option>
+        <option>Cloud Danışmanlık</option>
+        <option>Microsoft 365</option>
+        <option>AI Çözümleri</option>
+        <option>IoT & Otomasyon</option>
+        <option>Mobil / Web Geliştirme</option>
+        <option>Eğitim & Workshop</option>
+        <option>Diğer</option>
+      </select>
+      <textarea placeholder="Projenizi veya sorunuzu kısaca anlatın..."></textarea>
+      <button class="btn-primary" style="align-self:flex-start" onclick="this.textContent='Gönderildi ✓';this.style.background='#1E8A4C';this.disabled=true">Mesaj Gönder</button>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="logo">
+        <div class="logo-mark"><svg viewBox="0 0 24 24"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9z"/></svg></div>
+        <div class="logo-name" style="color:white"><span>Cloud</span>Source</div>
+      </div>
+      <p style="margin-top:14px">CloudSource Bilişim Danışmanlık ve Eğitim Hizmetleri Ltd. Şti. — Multi-cloud ve AI çözümleri, İstanbul.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Hizmetler</h4>
+      <a>Cloud Danışmanlık</a>
+      <a>Microsoft 365</a>
+      <a>AI Çözümleri</a>
+      <a>IoT & Otomasyon</a>
+      <a>Mobil & Web</a>
+      <a>Hidroponik Tech</a>
+    </div>
+    <div class="footer-col">
+      <h4>Şirket</h4>
+      <a>Hakkımızda</a>
+      <a>Ekip</a>
+      <a>Projeler</a>
+      <a>Blog & Haberler</a>
+      <a>İletişim</a>
+    </div>
+    <div class="footer-col">
+      <h4>Yasal</h4>
+      <a>KVKK Politikası</a>
+      <a>Gizlilik Politikası</a>
+      <a>Kullanım Koşulları</a>
+      <a>LinkedIn</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 CloudSource Bilişim Danışmanlık ve Eğitim Hizmetleri Ltd. Şti. Tüm hakları saklıdır.</div>
+    <div class="footer-legal">
+      <a>KVKK</a>
+      <a>Gizlilik</a>
+      <a>Çerezler</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
