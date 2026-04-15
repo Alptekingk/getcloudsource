@@ -2,7 +2,8 @@ name: Telegram Komut Dinleyici
 
 on:
   schedule:
-    - cron: '* * * * *'  # Her dakika kontrol eder
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
 
 jobs:
   listen:
@@ -11,88 +12,149 @@ jobs:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GH_TOKEN }}
+          fetch-depth: 1
 
-      - name: Telegram güncellemelerini kontrol et
-        run: |
-          BOT_TOKEN="${{ secrets.TELEGRAM_TOKEN }}"
-          CHAT_ID="${{ secrets.TELEGRAM_CHAT_ID }}"
-          GH_REPO="${{ github.repository }}"
-          GH_TOKEN="${{ secrets.GH_TOKEN }}"
-
-          OFFSET_FILE=".github/telegram_offset.txt"
-          OFFSET=0
-          if [ -f "$OFFSET_FILE" ]; then
-            OFFSET=$(cat "$OFFSET_FILE")
-          fi
-
-          UPDATES=$(curl -s \
-            "https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${OFFSET}&timeout=5")
-
-          echo "$UPDATES" | python3 - << 'PYEOF'
-import json, sys, os, subprocess, requests
-
-data = json.loads(sys.stdin.read())
-bot_token = os.environ['BOT_TOKEN'] if 'BOT_TOKEN' in os.environ else ''
-
-# Env'den al
-import subprocess
-bot_token_proc = subprocess.run(['bash','-c','echo $BOT_TOKEN'], capture_output=True, text=True)
-
-updates = data.get('result', [])
-if not updates:
-    sys.exit(0)
-
-last_id = 0
-for u in updates:
-    last_id = u['update_id']
-    msg = u.get('message', {})
-    text = msg.get('text', '')
-    chat_id = str(msg.get('chat', {}).get('id', ''))
-
-    expected_chat = os.environ.get('CHAT_ID', '')
-    if chat_id != expected_chat:
-        continue
-
-    parts = text.lstrip('/').split('_', 1)
-    if len(parts) < 2:
-        continue
-
-    cmd = parts[0]
-    filename = parts[1]
-
-    if cmd in ['onayla', 'reddet', 'duzenle']:
-        gh_token = os.environ.get('GH_TOKEN', '')
-        gh_repo = os.environ.get('GH_REPO', '')
-        url = f"https://api.github.com/repos/{gh_repo}/dispatches"
-        payload = {
-            "event_type": "telegram_command",
-            "client_payload": {
-                "command": cmd,
-                "filename": filename,
-                "chat_id": chat_id
-            }
-        }
-        r = requests.post(url,
-            json=payload,
-            headers={
-                "Authorization": f"token {gh_token}",
-                "Accept": "application/vnd.github.v3+json"
-            })
-        print(f"Dispatch: {cmd} {filename} → {r.status_code}")
-
-with open('.github/telegram_offset.txt', 'w') as f:
-    f.write(str(last_id + 1))
-PYEOF
-
-          if [ -f ".github/telegram_offset.txt" ]; then
-            git config user.email "bot@getcloudsource.com"
-            git config user.name "CloudSource Blog Bot"
-            git add .github/telegram_offset.txt
-            git diff --cached --quiet || git commit -m "🤖 Telegram offset güncellendi"
-            git push || true
-          fi
+      - name: Check Telegram and process commands
         env:
           BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GH_REPO: ${{ github.repository }}
+        run: |
+          pip install requests -q
+
+          python3 << 'PYEOF'
+import os, json, requests, subprocess
+
+token = os.environ['BOT_TOKEN']
+chat_id = os.environ['CHAT_ID']
+gh_token = os.environ['GH_TOKEN']
+gh_repo = os.environ['GH_REPO']
+
+def send(msg):
+    requests.post(
+        f"https://api.telegram.org/bot{token}/sendMessage",
+        json={"chat_id": chat_id, "text": msg}
+    )
+
+# Offset oku
+offset = 0
+offset_file = ".github/telegram_offset.txt"
+if os.path.exists(offset_file):
+    try:
+        offset = int(open(offset_file).read().strip())
+    except:
+        offset = 0
+
+# Guncellemeleri al
+r = requests.get(
+    f"https://api.telegram.org/bot{token}/getUpdates",
+    params={"offset": offset, "timeout": 5}
+)
+data = r.json()
+updates = data.get("result", [])
+
+if not updates:
+    print("Yeni mesaj yok")
+    exit(0)
+
+last_id = offset
+for u in updates:
+    last_id = u["update_id"]
+    msg = u.get("message", {})
+    text = msg.get("text", "").strip()
+    from_chat = str(msg.get("chat", {}).get("id", ""))
+
+    if from_chat != chat_id:
+        continue
+
+    print(f"Komut alindi: {text}")
+
+    if not text.startswith("/"):
+        continue
+
+    # /onayla_DOSYAADI veya /reddet_DOSYAADI veya /duzenle_DOSYAADI
+    text_clean = text.lstrip("/")
+    parts = text_clean.split("_", 1)
+    if len(parts) < 2:
+        send("Gecersiz komut. Ornek: /onayla_2026-04-17-azure-aws")
+        continue
+
+    cmd = parts[0]
+    filename = parts[1]
+
+    if cmd == "onayla":
+        src = f"blog/taslaklar/{filename}.md"
+        dst = f"blog/yayinlandi/{filename}.md"
+        if os.path.exists(src):
+            os.makedirs("blog/yayinlandi", exist_ok=True)
+            # Status guncelle
+            content = open(src).read()
+            content = content.replace("status: taslak", "status: yayinda")
+            open(dst, "w").write(content)
+            os.remove(src)
+            subprocess.run(["git", "config", "user.email", "bot@getcloudsource.com"])
+            subprocess.run(["git", "config", "user.name", "CloudSource Bot"])
+            subprocess.run(["git", "add", "-A"])
+            subprocess.run(["git", "commit", "-m", f"Yayinlandi: {filename}"])
+            subprocess.run(["git", "push"])
+            send(f"Yayinlandi!\n\n{filename}\n\nVercel deploy basliyor, ~30 saniye sonra canlida.")
+        else:
+            send(f"Dosya bulunamadi: {src}")
+
+    elif cmd == "reddet":
+        src = f"blog/taslaklar/{filename}.md"
+        if os.path.exists(src):
+            os.makedirs("blog/reddedildi", exist_ok=True)
+            dst = f"blog/reddedildi/{filename}.md"
+            os.rename(src, dst)
+            subprocess.run(["git", "config", "user.email", "bot@getcloudsource.com"])
+            subprocess.run(["git", "config", "user.name", "CloudSource Bot"])
+            subprocess.run(["git", "add", "-A"])
+            subprocess.run(["git", "commit", "-m", f"Reddedildi: {filename}"])
+            subprocess.run(["git", "push"])
+            send(f"Reddedildi. {filename} arsive tasindi.")
+        else:
+            send(f"Dosya bulunamadi: {src}")
+
+    elif cmd == "duzenle":
+        send(
+            f"Duzenleme modu: {filename}\n\n"
+            "Degistirmek istediginiz kismi yazin:\n"
+            "Ornek: 'Giris paragrafini daha kisa yap'\n\n"
+            "Not: Bu ozellik yakin zamanda aktif olacak."
+        )
+
+    elif cmd == "liste":
+        import glob
+        files = glob.glob("blog/taslaklar/*.md")
+        if files:
+            msg = "Bekleyen taslaklar:\n\n"
+            for f in files:
+                name = os.path.basename(f).replace(".md", "")
+                msg += f"- {name}\n"
+        else:
+            msg = "Bekleyen taslak yok."
+        send(msg)
+
+    else:
+        send(
+            "Komutlar:\n"
+            "/onayla_DOSYAADI - Yaziyi yayinla\n"
+            "/reddet_DOSYAADI - Yaziyi reddet\n"
+            "/duzenle_DOSYAADI - Duzenleme iste\n"
+            "/liste - Bekleyen taslaklari goster"
+        )
+
+# Offset kaydet
+open(offset_file, "w").write(str(last_id + 1))
+subprocess.run(["git", "config", "user.email", "bot@getcloudsource.com"])
+subprocess.run(["git", "config", "user.name", "CloudSource Bot"])
+subprocess.run(["git", "add", offset_file])
+result = subprocess.run(["git", "diff", "--cached", "--quiet"])
+if result.returncode != 0:
+    subprocess.run(["git", "commit", "-m", "Telegram offset guncellendi"])
+    subprocess.run(["git", "push"])
+
+print("Tamamlandi")
+PYEOF
