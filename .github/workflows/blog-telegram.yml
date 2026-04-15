@@ -1,0 +1,51 @@
+name: Blog Onay Sistemi
+
+on:
+  push:
+    paths:
+      - 'blog/taslaklar/**.md'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Yeni taslak tespit et
+        id: detect
+        run: |
+          FILE=$(git diff --name-only HEAD~1 HEAD | grep 'blog/taslaklar/' | head -1)
+          echo "file=$FILE" >> $GITHUB_OUTPUT
+          if [ -n "$FILE" ]; then
+            TITLE=$(grep '^title:' "$FILE" | sed 's/title: //' | tr -d '"')
+            DATE=$(grep '^date:' "$FILE" | sed 's/date: //')
+            CATEGORY=$(grep '^category:' "$FILE" | sed 's/category: //')
+            SLUG=$(grep '^slug:' "$FILE" | sed 's/slug: //')
+            echo "title=$TITLE" >> $GITHUB_OUTPUT
+            echo "date=$DATE" >> $GITHUB_OUTPUT
+            echo "category=$CATEGORY" >> $GITHUB_OUTPUT
+            echo "slug=$SLUG" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Telegram bildirim gönder
+        if: steps.detect.outputs.file != ''
+        run: |
+          PREVIEW_URL="https://getcloudsource.com/blog/${{ steps.detect.outputs.slug }}"
+          FILE="${{ steps.detect.outputs.file }}"
+          FILENAME=$(basename "$FILE" .md)
+
+          MESSAGE="📝 *YENİ YAZI TASLAĞI*
+
+Başlık: ${{ steps.detect.outputs.title }}
+Tarih: ${{ steps.detect.outputs.date }}
+Kategori: ${{ steps.detect.outputs.category }}
+
+✅ Onaylamak: /onayla\_${FILENAME}
+❌ Reddetmek: /reddet\_${FILENAME}
+✏️ Düzenleme: /duzenle\_${FILENAME}"
+
+          curl -s -X POST \
+            "https://api.telegram.org/bot${{ secrets.TELEGRAM_TOKEN }}/sendMessage" \
+            -d "chat_id=${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d "text=$MESSAGE" \
+            -d "parse_mode=Markdown"

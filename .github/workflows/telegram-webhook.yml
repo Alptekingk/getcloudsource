@@ -1,0 +1,67 @@
+name: Telegram Komut İşleyici
+
+on:
+  repository_dispatch:
+    types: [telegram_command]
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Komutu işle
+        run: |
+          CMD="${{ github.event.client_payload.command }}"
+          FILE="${{ github.event.client_payload.filename }}"
+          CHAT_ID="${{ secrets.TELEGRAM_CHAT_ID }}"
+          BOT_TOKEN="${{ secrets.TELEGRAM_TOKEN }}"
+
+          send_msg() {
+            curl -s -X POST \
+              "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+              -d "chat_id=${CHAT_ID}" \
+              -d "text=$1" \
+              -d "parse_mode=Markdown"
+          }
+
+          if [[ "$CMD" == "onayla" ]]; then
+            SRC="blog/taslaklar/${FILE}.md"
+            DST="blog/yayinlandi/${FILE}.md"
+            if [ -f "$SRC" ]; then
+              sed -i 's/status: taslak/status: yayinda/' "$SRC"
+              mv "$SRC" "$DST"
+              git config user.email "bot@getcloudsource.com"
+              git config user.name "CloudSource Blog Bot"
+              git add -A
+              git commit -m "✅ Yayınlandı: ${FILE}"
+              git push
+              send_msg "✅ *Yayınlandı!*
+
+📄 ${FILE}
+🌐 Vercel deploy başladı, ~30 saniye içinde canlıda."
+            else
+              send_msg "❌ Dosya bulunamadı: ${FILE}"
+            fi
+
+          elif [[ "$CMD" == "reddet" ]]; then
+            SRC="blog/taslaklar/${FILE}.md"
+            if [ -f "$SRC" ]; then
+              ARCHIVE="blog/reddedildi/${FILE}.md"
+              mkdir -p blog/reddedildi
+              mv "$SRC" "$ARCHIVE"
+              git config user.email "bot@getcloudsource.com"
+              git config user.name "CloudSource Blog Bot"
+              git add -A
+              git commit -m "❌ Reddedildi: ${FILE}"
+              git push
+              send_msg "❌ *Reddedildi.*
+📄 ${FILE} arşive taşındı."
+            fi
+
+          elif [[ "$CMD" == "duzenle" ]]; then
+            send_msg "✏️ *Düzenleme notu*
+Lütfen değiştirmek istediğiniz kısmı yazın, taslağı güncelleyeceğim."
+          fi

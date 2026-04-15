@@ -1,0 +1,98 @@
+name: Telegram Komut Dinleyici
+
+on:
+  schedule:
+    - cron: '* * * * *'  # Her dakika kontrol eder
+
+jobs:
+  listen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+
+      - name: Telegram güncellemelerini kontrol et
+        run: |
+          BOT_TOKEN="${{ secrets.TELEGRAM_TOKEN }}"
+          CHAT_ID="${{ secrets.TELEGRAM_CHAT_ID }}"
+          GH_REPO="${{ github.repository }}"
+          GH_TOKEN="${{ secrets.GH_TOKEN }}"
+
+          OFFSET_FILE=".github/telegram_offset.txt"
+          OFFSET=0
+          if [ -f "$OFFSET_FILE" ]; then
+            OFFSET=$(cat "$OFFSET_FILE")
+          fi
+
+          UPDATES=$(curl -s \
+            "https://api.telegram.org/bot${BOT_TOKEN}/getUpdates?offset=${OFFSET}&timeout=5")
+
+          echo "$UPDATES" | python3 - << 'PYEOF'
+import json, sys, os, subprocess, requests
+
+data = json.loads(sys.stdin.read())
+bot_token = os.environ['BOT_TOKEN'] if 'BOT_TOKEN' in os.environ else ''
+
+# Env'den al
+import subprocess
+bot_token_proc = subprocess.run(['bash','-c','echo $BOT_TOKEN'], capture_output=True, text=True)
+
+updates = data.get('result', [])
+if not updates:
+    sys.exit(0)
+
+last_id = 0
+for u in updates:
+    last_id = u['update_id']
+    msg = u.get('message', {})
+    text = msg.get('text', '')
+    chat_id = str(msg.get('chat', {}).get('id', ''))
+
+    expected_chat = os.environ.get('CHAT_ID', '')
+    if chat_id != expected_chat:
+        continue
+
+    parts = text.lstrip('/').split('_', 1)
+    if len(parts) < 2:
+        continue
+
+    cmd = parts[0]
+    filename = parts[1]
+
+    if cmd in ['onayla', 'reddet', 'duzenle']:
+        gh_token = os.environ.get('GH_TOKEN', '')
+        gh_repo = os.environ.get('GH_REPO', '')
+        url = f"https://api.github.com/repos/{gh_repo}/dispatches"
+        payload = {
+            "event_type": "telegram_command",
+            "client_payload": {
+                "command": cmd,
+                "filename": filename,
+                "chat_id": chat_id
+            }
+        }
+        r = requests.post(url,
+            json=payload,
+            headers={
+                "Authorization": f"token {gh_token}",
+                "Accept": "application/vnd.github.v3+json"
+            })
+        print(f"Dispatch: {cmd} {filename} → {r.status_code}")
+
+with open('.github/telegram_offset.txt', 'w') as f:
+    f.write(str(last_id + 1))
+PYEOF
+
+          if [ -f ".github/telegram_offset.txt" ]; then
+            git config user.email "bot@getcloudsource.com"
+            git config user.name "CloudSource Blog Bot"
+            git add .github/telegram_offset.txt
+            git diff --cached --quiet || git commit -m "🤖 Telegram offset güncellendi"
+            git push || true
+          fi
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GH_REPO: ${{ github.repository }}
