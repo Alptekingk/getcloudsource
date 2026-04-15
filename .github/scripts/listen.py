@@ -5,10 +5,11 @@ chat_id = os.environ['CHAT_ID']
 offset_file = ".github/telegram_offset.txt"
 
 def send(msg):
-    requests.post(
+    r = requests.post(
         f"https://api.telegram.org/bot{token}/sendMessage",
         json={"chat_id": chat_id, "text": msg}
     )
+    print(f"Mesaj gonderildi: {r.status_code}")
 
 def git_commit(msg):
     subprocess.run(["git", "config", "user.email", "bot@getcloudsource.com"])
@@ -17,7 +18,8 @@ def git_commit(msg):
     r = subprocess.run(["git", "diff", "--cached", "--quiet"])
     if r.returncode != 0:
         subprocess.run(["git", "commit", "-m", msg])
-        subprocess.run(["git", "push"])
+        result = subprocess.run(["git", "push"], capture_output=True, text=True)
+        print(f"Push: {result.returncode} {result.stderr}")
 
 def get_title(filepath):
     try:
@@ -32,38 +34,53 @@ def load_index(folder):
     files = sorted(glob.glob(f"{folder}/*.md"))
     return {str(i+1): f for i, f in enumerate(files)}
 
-# Offset oku
+# --- OFFSET OKU ---
 offset = 0
 if os.path.exists(offset_file):
     try:
-        offset = int(open(offset_file).read().strip())
+        val = open(offset_file).read().strip()
+        if val:
+            offset = int(val)
     except:
         offset = 0
+print(f"Baslangic offset: {offset}")
 
+# --- GUNCELLEME AL ---
 r = requests.get(
     f"https://api.telegram.org/bot{token}/getUpdates",
-    params={"offset": offset, "timeout": 5}
+    params={"offset": offset, "limit": 10, "timeout": 3}
 )
-updates = r.json().get("result", [])
+data = r.json()
+updates = data.get("result", [])
+print(f"Gelen mesaj sayisi: {len(updates)}")
 
 if not updates:
-    print("Mesaj yok")
-    open(offset_file, "w").write(str(offset))
+    print("Yeni mesaj yok, cikiliyor")
     exit(0)
 
-last_id = offset
+# --- ONCE OFFSET'I KAYDET, SONRA ISLE ---
+# Bu sayede tekrar islemez
+last_id = updates[-1]["update_id"]
+new_offset = last_id + 1
+print(f"Yeni offset: {new_offset}")
+
+os.makedirs(".github", exist_ok=True)
+open(offset_file, "w").write(str(new_offset))
+git_commit(f"Offset guncellendi: {new_offset}")
+
+# --- MESAJLARI ISLE ---
 for u in updates:
-    last_id = u["update_id"]
     msg_obj = u.get("message", {})
     text = msg_obj.get("text", "").strip()
     from_chat = str(msg_obj.get("chat", {}).get("id", ""))
 
     if from_chat != chat_id:
+        print(f"Farkli chat: {from_chat}, atlaniyor")
         continue
     if not text.startswith("/"):
         continue
 
-    print(f"Komut: {text}")
+    print(f"Isleniyor: {text}")
     clean = text.lstrip("/").strip()
     parts = clean.split("_", 1)
     cmd = parts[0].lower()
@@ -72,36 +89,29 @@ for u in updates:
     if cmd == "liste":
         taslaklar = load_index("blog/taslaklar")
         yayinda = load_index("blog/yayinlandi")
-
         msg_text = ""
+
         if taslaklar:
             msg_text += "BEKLEYEN TASLAKLAR:\n"
             for num, path in taslaklar.items():
-                title = get_title(path)
-                msg_text += f"{num}. {title}\n"
-            msg_text += "\nOnayla: /onayla_1\nReddet: /reddet_1\n\n"
+                msg_text += f"{num}. {get_title(path)}\n"
+            msg_text += "\n/onayla_1  /reddet_1\n\n"
         else:
             msg_text += "Bekleyen taslak yok.\n\n"
 
         if yayinda:
             msg_text += "YAYINDA:\n"
             for num, path in yayinda.items():
-                title = get_title(path)
-                msg_text += f"{num}. {title}\n"
-            msg_text += "\nGeri cek: /gericek_1"
+                msg_text += f"{num}. {get_title(path)}\n"
+            msg_text += "\n/gericek_1"
         else:
             msg_text += "Yayinda yazi yok."
 
         send(msg_text)
 
     elif cmd == "onayla" and arg:
-        # Numara veya dosya adi destekle
         taslaklar = load_index("blog/taslaklar")
-        if arg in taslaklar:
-            src = taslaklar[arg]
-        else:
-            src = f"blog/taslaklar/{arg}.md"
-
+        src = taslaklar.get(arg) or f"blog/taslaklar/{arg}.md"
         if os.path.exists(src):
             filename = os.path.basename(src).replace(".md", "")
             title = get_title(src)
@@ -110,34 +120,26 @@ for u in updates:
             open(f"blog/yayinlandi/{filename}.md", "w").write(content)
             os.remove(src)
             git_commit(f"Yayinlandi: {filename}")
-            send(f"Yayinlandi!\n\n{title}\n\nVercel deploy basliyor, ~30 saniye sonra canlida.")
+            send(f"Yayinlandi!\n{title}\n\n~30 saniye sonra canlida.")
         else:
-            send(f"Bulunamadi. Mevcut taslaklar icin /liste yazin.")
+            send("Bulunamadi. /liste ile kontrol edin.")
 
     elif cmd == "reddet" and arg:
         taslaklar = load_index("blog/taslaklar")
-        if arg in taslaklar:
-            src = taslaklar[arg]
-        else:
-            src = f"blog/taslaklar/{arg}.md"
-
+        src = taslaklar.get(arg) or f"blog/taslaklar/{arg}.md"
         if os.path.exists(src):
             filename = os.path.basename(src).replace(".md", "")
             title = get_title(src)
             os.makedirs("blog/reddedildi", exist_ok=True)
             os.rename(src, f"blog/reddedildi/{filename}.md")
             git_commit(f"Reddedildi: {filename}")
-            send(f"Reddedildi.\n\n{title}\nArsive tasindi.")
+            send(f"Reddedildi.\n{title}")
         else:
-            send("Bulunamadi. Mevcut taslaklar icin /liste yazin.")
+            send("Bulunamadi. /liste ile kontrol edin.")
 
     elif cmd == "gericek" and arg:
         yayinda = load_index("blog/yayinlandi")
-        if arg in yayinda:
-            src = yayinda[arg]
-        else:
-            src = f"blog/yayinlandi/{arg}.md"
-
+        src = yayinda.get(arg) or f"blog/yayinlandi/{arg}.md"
         if os.path.exists(src):
             filename = os.path.basename(src).replace(".md", "")
             title = get_title(src)
@@ -146,29 +148,25 @@ for u in updates:
             open(f"blog/taslaklar/{filename}.md", "w").write(content)
             os.remove(src)
             git_commit(f"Geri cekildi: {filename}")
-            send(f"Geri cekildi!\n\n{title}\nTaslaklar klasorune geri alindi.")
+            send(f"Geri cekildi!\n{title}\nTaslaga alindi.")
         else:
-            send("Bulunamadi. Mevcut yayinlar icin /liste yazin.")
+            send("Bulunamadi. /liste ile kontrol edin.")
 
     elif cmd == "start":
         send(
-            "CloudSource Blog Bot aktif!\n\n"
-            "/liste - Tum yazilari goster\n"
-            "/onayla_1 - 1 numarali taslagi yayinla\n"
-            "/reddet_1 - 1 numarali taslagi reddet\n"
-            "/gericek_1 - 1 numarali yayini geri cek"
+            "CloudSource Blog Bot\n\n"
+            "/liste - Yazilari goster\n"
+            "/onayla_1 - Yayinla\n"
+            "/reddet_1 - Reddet\n"
+            "/gericek_1 - Yayindan geri cek"
         )
 
     else:
         send(
-            "Komutlar:\n"
-            "/liste - Tum yazilari goster\n"
-            "/onayla_NUMARA - Taslagi yayinla\n"
-            "/reddet_NUMARA - Taslagi reddet\n"
-            "/gericek_NUMARA - Yayini geri cek"
+            "/liste - Yazilari goster\n"
+            "/onayla_NUMARA - Yayinla\n"
+            "/reddet_NUMARA - Reddet\n"
+            "/gericek_NUMARA - Geri cek"
         )
 
-# Offset kaydet
-open(offset_file, "w").write(str(last_id + 1))
-git_commit("Offset guncellendi")
-print("Tamamlandi")
+print("Tum komutlar islendi")
