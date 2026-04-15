@@ -1,4 +1,4 @@
-name: Telegram Komut İşleyici
+name: Telegram Webhook Isleme
 
 on:
   repository_dispatch:
@@ -12,56 +12,62 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
 
-      - name: Komutu işle
+      - name: Process command
+        env:
+          BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          CMD: ${{ github.event.client_payload.command }}
+          FILENAME: ${{ github.event.client_payload.filename }}
         run: |
-          CMD="${{ github.event.client_payload.command }}"
-          FILE="${{ github.event.client_payload.filename }}"
-          CHAT_ID="${{ secrets.TELEGRAM_CHAT_ID }}"
-          BOT_TOKEN="${{ secrets.TELEGRAM_TOKEN }}"
+          pip install requests -q
+          python3 << 'PYEOF'
+import os, requests, subprocess
 
-          send_msg() {
-            curl -s -X POST \
-              "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
-              -d "chat_id=${CHAT_ID}" \
-              -d "text=$1" \
-              -d "parse_mode=Markdown"
-          }
+token = os.environ['BOT_TOKEN']
+chat_id = os.environ['CHAT_ID']
+cmd = os.environ.get('CMD', '')
+filename = os.environ.get('FILENAME', '')
 
-          if [[ "$CMD" == "onayla" ]]; then
-            SRC="blog/taslaklar/${FILE}.md"
-            DST="blog/yayinlandi/${FILE}.md"
-            if [ -f "$SRC" ]; then
-              sed -i 's/status: taslak/status: yayinda/' "$SRC"
-              mv "$SRC" "$DST"
-              git config user.email "bot@getcloudsource.com"
-              git config user.name "CloudSource Blog Bot"
-              git add -A
-              git commit -m "✅ Yayınlandı: ${FILE}"
-              git push
-              send_msg "✅ *Yayınlandı!*
+def send(msg):
+    requests.post(
+        f"https://api.telegram.org/bot{token}/sendMessage",
+        json={"chat_id": chat_id, "text": msg}
+    )
 
-📄 ${FILE}
-🌐 Vercel deploy başladı, ~30 saniye içinde canlıda."
-            else
-              send_msg "❌ Dosya bulunamadı: ${FILE}"
-            fi
+if cmd == "onayla":
+    src = f"blog/taslaklar/{filename}.md"
+    dst = f"blog/yayinlandi/{filename}.md"
+    if os.path.exists(src):
+        os.makedirs("blog/yayinlandi", exist_ok=True)
+        content = open(src).read()
+        content = content.replace("status: taslak", "status: yayinda")
+        open(dst, "w").write(content)
+        os.remove(src)
+        subprocess.run(["git", "config", "user.email", "bot@getcloudsource.com"])
+        subprocess.run(["git", "config", "user.name", "CloudSource Bot"])
+        subprocess.run(["git", "add", "-A"])
+        subprocess.run(["git", "commit", "-m", f"Yayinlandi: {filename}"])
+        subprocess.run(["git", "push"])
+        send(f"Yayinlandi!\n\n{filename}\n\nVercel deploy basliyor.")
+    else:
+        send(f"Dosya bulunamadi: {src}")
 
-          elif [[ "$CMD" == "reddet" ]]; then
-            SRC="blog/taslaklar/${FILE}.md"
-            if [ -f "$SRC" ]; then
-              ARCHIVE="blog/reddedildi/${FILE}.md"
-              mkdir -p blog/reddedildi
-              mv "$SRC" "$ARCHIVE"
-              git config user.email "bot@getcloudsource.com"
-              git config user.name "CloudSource Blog Bot"
-              git add -A
-              git commit -m "❌ Reddedildi: ${FILE}"
-              git push
-              send_msg "❌ *Reddedildi.*
-📄 ${FILE} arşive taşındı."
-            fi
+elif cmd == "reddet":
+    src = f"blog/taslaklar/{filename}.md"
+    if os.path.exists(src):
+        os.makedirs("blog/reddedildi", exist_ok=True)
+        dst = f"blog/reddedildi/{filename}.md"
+        os.rename(src, dst)
+        subprocess.run(["git", "config", "user.email", "bot@getcloudsource.com"])
+        subprocess.run(["git", "config", "user.name", "CloudSource Bot"])
+        subprocess.run(["git", "add", "-A"])
+        subprocess.run(["git", "commit", "-m", f"Reddedildi: {filename}"])
+        subprocess.run(["git", "push"])
+        send(f"Reddedildi. {filename} arsive tasindi.")
+    else:
+        send(f"Dosya bulunamadi: {src}")
 
-          elif [[ "$CMD" == "duzenle" ]]; then
-            send_msg "✏️ *Düzenleme notu*
-Lütfen değiştirmek istediğiniz kısmı yazın, taslağı güncelleyeceğim."
-          fi
+elif cmd == "duzenle":
+    send(f"Duzenleme modu aktif: {filename}\nNe degistirilsin?")
+
+PYEOF
