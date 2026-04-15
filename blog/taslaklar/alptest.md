@@ -10,4 +10,4 @@ status: taslak
 ---
 
 Bu bir test yazisidir. Sistem calisiyor!
-test1
+test2
