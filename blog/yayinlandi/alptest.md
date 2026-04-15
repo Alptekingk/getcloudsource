@@ -6,7 +6,7 @@ category: Test
 tags: [test]
 seo_keyword: test
 author: CloudSource Ekibi
-status: taslak
+status: yayinda
 ---
 
 Bu bir test yazisidir. Sistem calisiyor!
