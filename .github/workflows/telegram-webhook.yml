@@ -12,62 +12,13 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
 
+      - name: Install deps
+        run: pip install requests -q
+
       - name: Process command
+        run: python3 .github/scripts/process_command.py
         env:
           BOT_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
           CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           CMD: ${{ github.event.client_payload.command }}
           FILENAME: ${{ github.event.client_payload.filename }}
-        run: |
-          pip install requests -q
-          python3 << 'PYEOF'
-import os, requests, subprocess
-
-token = os.environ['BOT_TOKEN']
-chat_id = os.environ['CHAT_ID']
-cmd = os.environ.get('CMD', '')
-filename = os.environ.get('FILENAME', '')
-
-def send(msg):
-    requests.post(
-        f"https://api.telegram.org/bot{token}/sendMessage",
-        json={"chat_id": chat_id, "text": msg}
-    )
-
-if cmd == "onayla":
-    src = f"blog/taslaklar/{filename}.md"
-    dst = f"blog/yayinlandi/{filename}.md"
-    if os.path.exists(src):
-        os.makedirs("blog/yayinlandi", exist_ok=True)
-        content = open(src).read()
-        content = content.replace("status: taslak", "status: yayinda")
-        open(dst, "w").write(content)
-        os.remove(src)
-        subprocess.run(["git", "config", "user.email", "bot@getcloudsource.com"])
-        subprocess.run(["git", "config", "user.name", "CloudSource Bot"])
-        subprocess.run(["git", "add", "-A"])
-        subprocess.run(["git", "commit", "-m", f"Yayinlandi: {filename}"])
-        subprocess.run(["git", "push"])
-        send(f"Yayinlandi!\n\n{filename}\n\nVercel deploy basliyor.")
-    else:
-        send(f"Dosya bulunamadi: {src}")
-
-elif cmd == "reddet":
-    src = f"blog/taslaklar/{filename}.md"
-    if os.path.exists(src):
-        os.makedirs("blog/reddedildi", exist_ok=True)
-        dst = f"blog/reddedildi/{filename}.md"
-        os.rename(src, dst)
-        subprocess.run(["git", "config", "user.email", "bot@getcloudsource.com"])
-        subprocess.run(["git", "config", "user.name", "CloudSource Bot"])
-        subprocess.run(["git", "add", "-A"])
-        subprocess.run(["git", "commit", "-m", f"Reddedildi: {filename}"])
-        subprocess.run(["git", "push"])
-        send(f"Reddedildi. {filename} arsive tasindi.")
-    else:
-        send(f"Dosya bulunamadi: {src}")
-
-elif cmd == "duzenle":
-    send(f"Duzenleme modu aktif: {filename}\nNe degistirilsin?")
-
-PYEOF
