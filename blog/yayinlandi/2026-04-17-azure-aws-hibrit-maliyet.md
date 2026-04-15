@@ -6,7 +6,7 @@ category: Cloud & Azure
 tags: [azure, aws, multi-cloud, maliyet, mimari]
 seo_keyword: azure danışmanlık istanbul
 author: CloudSource Ekibi
-status: taslak
+status: yayinda
 ---
 
 # Azure ve AWS'yi birlikte kullanmak: hibrit multi-cloud mimarisinde maliyet optimizasyonu
